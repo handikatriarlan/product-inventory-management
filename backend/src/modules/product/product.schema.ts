@@ -1,7 +1,12 @@
 import { z } from 'zod'
 
 export const createProductSchema = z.object({
-  sku: z.string('SKU wajib diisi').trim().min(1, 'SKU wajib diisi').max(50, 'SKU maksimal 50 karakter'),
+  sku: z
+    .string('SKU wajib diisi')
+    .trim()
+    .min(1, 'SKU wajib diisi')
+    .max(50, 'SKU maksimal 50 karakter')
+    .toUpperCase(),
   name: z
     .string('Nama wajib diisi')
     .trim()

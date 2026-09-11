@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express'
 import { AppError } from '../../lib/app-error.ts'
 import { sendData, sendList } from '../../lib/http.ts'
+import { assertValidImage } from '../../lib/upload.ts'
 import {
   createProductSchema,
   listProductsQuerySchema,
@@ -40,6 +41,7 @@ export async function uploadImage(req: Request, res: Response) {
   if (!req.file) {
     throw new AppError(400, 'VALIDATION_ERROR', 'File gambar wajib diunggah')
   }
+  await assertValidImage(req.file)
   const product = await productService.updateProductImage(id, `/uploads/${req.file.filename}`)
   sendData(res, product)
 }
