@@ -1,14 +1,21 @@
 import type { Request, Response } from 'express'
-import { sendData } from '../../lib/http.ts'
+import { sendData, sendList } from '../../lib/http.ts'
 import {
   createProductSchema,
+  listProductsQuerySchema,
   productIdParamSchema,
   updateProductSchema,
 } from './product.schema.ts'
 import * as productService from './product.service.ts'
 
-export async function list(_req: Request, res: Response) {
-  sendData(res, await productService.listProducts())
+export async function list(req: Request, res: Response) {
+  const { page, limit, ...query } = listProductsQuerySchema.parse(req.query)
+  const { items, total } = await productService.listProducts({ page, limit, ...query })
+  sendList(res, items, { page, limit, total, totalPages: Math.ceil(total / limit) })
+}
+
+export async function categories(_req: Request, res: Response) {
+  sendData(res, await productService.getCategories())
 }
 
 export async function getById(req: Request, res: Response) {
