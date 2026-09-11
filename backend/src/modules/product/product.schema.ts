@@ -16,11 +16,13 @@ export const createProductSchema = z.object({
   price: z
     .number('Harga harus berupa angka')
     .nonnegative('Harga tidak boleh negatif')
+    .max(9_999_999_999.99, 'Harga maksimal 9.999.999.999,99')
     .multipleOf(0.01, 'Harga maksimal 2 desimal'),
   stock: z
     .number('Stok harus berupa angka')
     .int('Stok harus bilangan bulat')
-    .nonnegative('Stok tidak boleh negatif'),
+    .nonnegative('Stok tidak boleh negatif')
+    .max(2_147_483_647, 'Stok maksimal 2.147.483.647'),
   category: z.string('Kategori harus berupa teks').trim().max(100, 'Kategori maksimal 100 karakter').nullish(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 })

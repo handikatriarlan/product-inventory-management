@@ -1,6 +1,7 @@
 import { unlink } from 'node:fs/promises'
 import path from 'node:path'
-import type { Prisma, Product } from '../../generated/prisma/client.ts'
+import { Prisma } from '../../generated/prisma/client.ts'
+import type { Product } from '../../generated/prisma/client.ts'
 import { AppError } from '../../lib/app-error.ts'
 import { prisma } from '../../lib/prisma.ts'
 import { uploadDir } from '../../lib/upload.ts'
@@ -8,6 +9,17 @@ import type { CreateProductInput, ListProductsQueryInput, UpdateProductInput } f
 
 function serializeProduct(product: Product) {
   return { ...product, price: Math.round(Number(product.price) * 100) / 100 }
+}
+
+async function withSkuConflict<T>(operation: () => Promise<T>) {
+  try {
+    return await operation()
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+      throw new AppError(409, 'CONFLICT', 'SKU sudah digunakan')
+    }
+    throw error
+  }
 }
 
 export async function listProducts(query: ListProductsQueryInput) {
@@ -44,12 +56,17 @@ export async function listProducts(query: ListProductsQueryInput) {
 export async function getCategories() {
   const rows = await prisma.product.findMany({
     where: { category: { not: null } },
-    distinct: ['category'],
     select: { category: true },
-    orderBy: { category: 'asc' },
   })
 
-  return rows.map((row) => row.category).filter((category): category is string => category !== null)
+  const unique = new Map<string, string>()
+  for (const row of rows) {
+    if (row.category && !unique.has(row.category.toLowerCase())) {
+      unique.set(row.category.toLowerCase(), row.category)
+    }
+  }
+
+  return [...unique.values()].sort((a, b) => a.localeCompare(b, 'id', { sensitivity: 'base' }))
 }
 
 export async function getProductById(id: string) {
@@ -61,13 +78,13 @@ export async function getProductById(id: string) {
 }
 
 export async function createProduct(input: CreateProductInput) {
-  const product = await prisma.product.create({ data: input })
+  const product = await withSkuConflict(() => prisma.product.create({ data: input }))
   return serializeProduct(product)
 }
 
 export async function updateProduct(id: string, input: UpdateProductInput) {
   await getProductById(id)
-  const product = await prisma.product.update({ where: { id }, data: input })
+  const product = await withSkuConflict(() => prisma.product.update({ where: { id }, data: input }))
   return serializeProduct(product)
 }
 
