@@ -1,6 +1,9 @@
+import { unlink } from 'node:fs/promises'
+import path from 'node:path'
 import type { Prisma, Product } from '../../generated/prisma/client.ts'
 import { AppError } from '../../lib/app-error.ts'
 import { prisma } from '../../lib/prisma.ts'
+import { uploadDir } from '../../lib/upload.ts'
 import type { CreateProductInput, ListProductsQueryInput, UpdateProductInput } from './product.schema.ts'
 
 function serializeProduct(product: Product) {
@@ -68,7 +71,22 @@ export async function updateProduct(id: string, input: UpdateProductInput) {
   return serializeProduct(product)
 }
 
+export async function updateProductImage(id: string, imageUrl: string) {
+  const previous = await getProductById(id)
+  const product = await prisma.product.update({ where: { id }, data: { imageUrl } })
+  await removeUploadedFile(previous.imageUrl)
+  return serializeProduct(product)
+}
+
+async function removeUploadedFile(imageUrl: string | null) {
+  if (!imageUrl?.startsWith('/uploads/')) {
+    return
+  }
+  await unlink(path.join(uploadDir, path.basename(imageUrl))).catch(() => {})
+}
+
 export async function deleteProduct(id: string) {
-  await getProductById(id)
+  const product = await getProductById(id)
   await prisma.product.delete({ where: { id } })
+  await removeUploadedFile(product.imageUrl)
 }

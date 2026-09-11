@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { AppError } from '../../lib/app-error.ts'
 import { sendData, sendList } from '../../lib/http.ts'
 import {
   createProductSchema,
@@ -32,6 +33,15 @@ export async function update(req: Request, res: Response) {
   const { id } = productIdParamSchema.parse(req.params)
   const input = updateProductSchema.parse(req.body)
   sendData(res, await productService.updateProduct(id, input))
+}
+
+export async function uploadImage(req: Request, res: Response) {
+  const { id } = productIdParamSchema.parse(req.params)
+  if (!req.file) {
+    throw new AppError(400, 'VALIDATION_ERROR', 'File gambar wajib diunggah')
+  }
+  const product = await productService.updateProductImage(id, `/uploads/${req.file.filename}`)
+  sendData(res, product)
 }
 
 export async function remove(req: Request, res: Response) {

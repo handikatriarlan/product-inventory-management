@@ -17,6 +17,7 @@
     "@types/bun": "latest",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.2.0",
     "@types/node": "^22.20.2",
     "prisma": "7.10.0"
   },
@@ -29,6 +30,7 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "multer": "^2.3.0",
     "zod": "^4.6.2"
   }
 }
