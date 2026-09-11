@@ -1,4 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
+import { ZodError } from 'zod'
+import { Prisma } from '../generated/prisma/client.ts'
 import { env } from '../config/env.ts'
 import { AppError } from './app-error.ts'
 
@@ -30,6 +32,44 @@ export function errorHandler(err: unknown, req: Request, res: Response, next: Ne
     }
     res.status(err.status).json({ error })
     return
+  }
+
+  if (err instanceof ZodError) {
+    res.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Request tidak valid',
+        details: err.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        })),
+      },
+    })
+    return
+  }
+
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
+    if (err.code === 'P2002') {
+      const target = err.meta?.target
+      const fields = Array.isArray(target)
+        ? target.join(', ')
+        : typeof target === 'string'
+          ? target
+          : undefined
+      const error: { code: string; message: string; details?: unknown } = {
+        code: 'CONFLICT',
+        message: fields ? `Nilai unik sudah digunakan: ${fields}` : 'Nilai unik sudah digunakan',
+      }
+      if (fields) {
+        error.details = { target: fields }
+      }
+      res.status(409).json({ error })
+      return
+    }
+    if (err.code === 'P2025') {
+      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Data tidak ditemukan' } })
+      return
+    }
   }
 
   console.error(`[error] ${req.method} ${req.originalUrl}`, err)
