@@ -6,7 +6,7 @@ const envSchema = z.object({
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
   UPLOAD_DIR: z.string().default('./uploads'),
   MAX_UPLOAD_SIZE_MB: z.coerce.number().positive().default(5),
-  DATABASE_URL: z.string().min(1).optional(),
+  DATABASE_URL: z.string().min(1),
 })
 
 const parsed = envSchema.safeParse(process.env)
