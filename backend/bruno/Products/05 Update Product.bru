@@ -1,0 +1,26 @@
+meta {
+  name: Update Product
+  type: http
+  seq: 5
+}
+
+patch {
+  url: {{baseUrl}}/products/{{productId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "price": 179000,
+    "stock": 18
+  }
+}
+
+tests {
+  test("status 200 dan data ter-update", function() {
+    expect(res.status).to.equal(200)
+    expect(res.body.data.price).to.equal(179000)
+    expect(res.body.data.stock).to.equal(18)
+  })
+}

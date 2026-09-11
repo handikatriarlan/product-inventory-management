@@ -1,0 +1,19 @@
+meta {
+  name: List Categories
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{baseUrl}}/products/categories
+  body: none
+  auth: none
+}
+
+tests {
+  test("status 200 dan berisi Electronics", function() {
+    expect(res.status).to.equal(200)
+    expect(res.body.data).to.be.an("array")
+    expect(res.body.data).to.include("Electronics")
+  })
+}
