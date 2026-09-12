@@ -41,9 +41,9 @@ export interface ProductQuery {
 export interface ProductPayload {
   sku: string
   name: string
-  description?: string
+  description?: string | null
   price: number
   stock: number
-  category?: string
+  category?: string | null
   status: ProductStatus
 }
