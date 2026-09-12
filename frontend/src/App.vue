@@ -8,11 +8,11 @@ import ToastContainer from './components/ui/ToastContainer.vue'
 <template>
   <div class="flex min-h-screen flex-col bg-white text-neutral-900">
     <AppHeader />
-    <main class="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
+    <main class="mx-auto w-full max-w-6xl flex-1 px-3 py-5 sm:px-4 sm:py-8">
       <RouterView />
     </main>
     <footer class="border-t border-neutral-200">
-      <p class="mx-auto max-w-6xl px-4 py-6 text-[11px] uppercase tracking-widest text-neutral-400">
+      <p class="mx-auto max-w-6xl px-3 py-5 text-[11px] uppercase tracking-widest text-neutral-500 sm:px-4 sm:py-6">
         Seakun Product Inventory
       </p>
     </footer>

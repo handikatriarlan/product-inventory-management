@@ -3,11 +3,11 @@ import { RouterLink } from 'vue-router'
 </script>
 
 <template>
-  <header class="border-b border-neutral-200 bg-white">
-    <div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3">
+  <header class="sticky top-0 z-40 border-b border-neutral-200 bg-white pt-[env(safe-area-inset-top)]">
+    <div class="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-4 px-3 sm:px-4">
       <RouterLink
         to="/products"
-        class="text-sm font-semibold uppercase tracking-[0.2em] text-neutral-900"
+        class="text-xs font-semibold uppercase tracking-[0.2em] text-neutral-900 sm:text-sm"
       >
         Product Inventory
       </RouterLink>
