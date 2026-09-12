@@ -214,7 +214,7 @@ In development Vite proxies `/products`, `/uploads`, and `/health` to `VITE_API_
 | `POSTGRES_USER` | `postgres` | Database user |
 | `POSTGRES_PASSWORD` | `postgres` | Database password |
 | `POSTGRES_DB` | `db_inventory` | Database name |
-| `BACKEND_PORT` | `3000` | Host port for the API |
+| `BACKEND_PORT` | `3000` | Host port for the API (bound to `127.0.0.1` when running via Docker) |
 | `FRONTEND_PORT` | `8080` | Host port for the frontend |
 | `VITE_API_BASE_URL` | empty | Baked into the frontend build; empty means same-origin via nginx |
 
@@ -323,11 +323,11 @@ Invalid values (including non-numeric `page`/`limit`, repeated parameters, and u
 | `VALIDATION_ERROR` | 400 | Request body/query/params fail validation |
 | `NOT_FOUND` | 404 | Product or route does not exist |
 | `CONFLICT` | 409 | Duplicate `sku` |
-| `PAYLOAD_TOO_LARGE` | 413 | Image exceeds `MAX_UPLOAD_SIZE_MB` |
+| `PAYLOAD_TOO_LARGE` | 413 | Request body or uploaded image exceeds the size limit |
 | `UNSUPPORTED_MEDIA_TYPE` | 415 | File is not a valid jpg/png/webp image |
 | `TOO_MANY_REQUESTS` | 429 | Upload rate limit exceeded (20 requests / 15 minutes per IP) |
 | `INTERNAL_ERROR` | 500 | Unexpected error |
-| `SERVICE_UNAVAILABLE` | 503 | Database unreachable (`/health`) |
+| `SERVICE_UNAVAILABLE` | 503 | Database unreachable (any endpoint, including `/health`) |
 
 ### Examples
 
@@ -389,8 +389,8 @@ You can also open the folder in the [Bruno app](https://www.usebruno.com) and ru
 3. **`price` handling** — stored as PostgreSQL `Decimal(12,2)`, returned by the API as a number with at most 2 decimals (JavaScript has no native decimal type; sums of money are not performed server-side).
 4. **`category` is free text** — no separate categories table. `GET /products/categories` returns distinct values for dropdown suggestions.
 5. **`imageUrl` is relative** (`/uploads/<filename>`) — works for both dev proxy and production nginx.
-6. **Upload validation** — one file, max 5 MB (`MAX_UPLOAD_SIZE_MB`), mime type restricted to jpeg/png/webp, and the file's first bytes are checked (magic bytes) so a renamed non-image is rejected with `415`.
-7. **Uploaded filenames are random UUIDs** with the original extension; the original name is not reused.
+6. **Upload validation** — one file, max 5 MB (`MAX_UPLOAD_SIZE_MB`), mime type and file extension restricted to jpeg/png/webp, and the file's first bytes are checked (magic bytes) so a renamed non-image is rejected with `415`.
+7. **Uploaded filenames are random UUIDs**, and the stored extension is derived from the validated image content (not from the original filename), so a forged client extension can never be served as active content.
 8. **Old images are deleted** from disk when a product image is replaced or the product is deleted.
 9. **No authentication/authorization** — explicitly not required by the brief.
 10. **No automated tests** — a deliberate scope decision for this exercise; quality is backed by strict TypeScript, `bun run typecheck` / `bun run type-check`, `bun run build`, and manual end-to-end verification (including the Bruno collection).
@@ -404,6 +404,7 @@ You can also open the folder in the [Bruno app](https://www.usebruno.com) and ru
 18. **nginx serves `index.html` for browser navigations under `/products`** (based on `Accept: text/html`) while proxying JSON/XHR requests to the API — otherwise deep links like `/products` would be shadowed by the API proxy.
 19. **`/health` checks the database** and returns `503 SERVICE_UNAVAILABLE` when it is unreachable.
 20. **Seed data is manual** (`bun run db:seed`) and idempotent: it clears the table and re-inserts 20 products, so it never silently duplicates data.
+21. **In Docker the API port is published on `127.0.0.1` only** — nginx is the public entry point, and `trust proxy` is enabled only in production so the rate limiter reads the real client IP forwarded by nginx. Malformed JSON returns `400`, oversized request bodies `413`, and an unreachable database `503` on any endpoint (not just `/health`).
 
 ---
 
