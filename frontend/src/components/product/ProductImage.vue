@@ -20,7 +20,9 @@ watch(
 const resolvedSrc = computed(() => (!props.src || failed.value ? placeholderUrl : props.src))
 
 const sizeClass = computed(() =>
-  props.size === 'lg' ? 'w-full aspect-square rounded-xl' : 'h-12 w-12 rounded-lg',
+  props.size === 'lg'
+    ? 'aspect-square w-full border border-neutral-200'
+    : 'h-12 w-12 border border-neutral-200',
 )
 </script>
 
@@ -31,7 +33,7 @@ const sizeClass = computed(() =>
     :title="alt"
     loading="lazy"
     :class="sizeClass"
-    class="bg-slate-100 object-cover"
+    class="bg-neutral-100 object-cover"
     @error="failed = true"
   />
 </template>

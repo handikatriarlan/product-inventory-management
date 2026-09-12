@@ -8,8 +8,8 @@ defineProps<{
 
 <template>
   <span
-    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-    :class="status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'"
+    class="inline-flex items-center px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide"
+    :class="status === 'ACTIVE' ? 'bg-neutral-900 text-white' : 'border border-neutral-300 text-neutral-500'"
   >
     {{ status === 'ACTIVE' ? 'Aktif' : 'Nonaktif' }}
   </span>

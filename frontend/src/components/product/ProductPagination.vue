@@ -31,21 +31,24 @@ const rangeStart = computed(() =>
   props.meta.total === 0 ? 0 : (props.meta.page - 1) * props.meta.limit + 1,
 )
 const rangeEnd = computed(() => Math.min(props.meta.page * props.meta.limit, props.meta.total))
+
+const stepClass =
+  'border border-neutral-300 px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-700 hover:border-neutral-900 disabled:pointer-events-none disabled:opacity-40'
 </script>
 
 <template>
   <div
     v-if="meta.total > 0"
-    class="flex flex-col items-center justify-between gap-3 sm:flex-row"
+    class="flex flex-col items-center justify-between gap-3 pt-1 sm:flex-row"
   >
-    <p class="text-sm text-slate-600">
+    <p class="text-xs uppercase tracking-wide text-neutral-500">
       Menampilkan {{ rangeStart }}–{{ rangeEnd }} dari {{ meta.total }} produk
     </p>
 
     <nav v-if="meta.totalPages > 1" class="flex items-center gap-1" aria-label="Navigasi halaman">
       <button
         type="button"
-        class="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+        :class="stepClass"
         :disabled="meta.page <= 1"
         @click="emit('change', meta.page - 1)"
       >
@@ -53,15 +56,15 @@ const rangeEnd = computed(() => Math.min(props.meta.page * props.meta.limit, pro
       </button>
 
       <template v-for="(page, index) in pages" :key="`${page}-${index}`">
-        <span v-if="page === 'ellipsis'" class="px-2 text-sm text-slate-400">…</span>
+        <span v-if="page === 'ellipsis'" class="px-2 text-sm text-neutral-400">…</span>
         <button
           v-else
           type="button"
-          class="min-w-9 rounded-md border px-3 py-1 text-sm"
+          class="min-w-9 border px-3 py-1 text-xs font-medium tabular-nums"
           :class="
             page === meta.page
-              ? 'border-slate-900 bg-slate-900 text-white'
-              : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+              ? 'border-neutral-900 bg-neutral-900 text-white'
+              : 'border-neutral-300 text-neutral-700 hover:border-neutral-900'
           "
           :aria-current="page === meta.page ? 'page' : undefined"
           @click="emit('change', page)"
@@ -72,7 +75,7 @@ const rangeEnd = computed(() => Math.min(props.meta.page * props.meta.limit, pro
 
       <button
         type="button"
-        class="rounded-md border border-slate-300 px-3 py-1 text-sm text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+        :class="stepClass"
         :disabled="meta.page >= meta.totalPages"
         @click="emit('change', meta.page + 1)"
       >

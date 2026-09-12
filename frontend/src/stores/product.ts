@@ -36,9 +36,11 @@ export const useProductStore = defineStore('product', () => {
     order: 'desc',
   })
 
-  const hasPrev = computed(() => query.page > 1)
-  const hasNext = computed(() => query.page < meta.value.totalPages)
   const isEmpty = computed(() => items.value.length === 0)
+
+  function setQuery(patch: Partial<ProductListQuery>) {
+    Object.assign(query, patch)
+  }
 
   async function fetchList() {
     loading.value = true
@@ -79,15 +81,6 @@ export const useProductStore = defineStore('product', () => {
     await fetchList()
   }
 
-  function resetFilters() {
-    query.page = 1
-    query.search = ''
-    query.category = ''
-    query.status = ''
-    query.sortBy = 'createdAt'
-    query.order = 'desc'
-  }
-
   return {
     items,
     meta,
@@ -95,12 +88,10 @@ export const useProductStore = defineStore('product', () => {
     loading,
     error,
     query,
-    hasPrev,
-    hasNext,
     isEmpty,
+    setQuery,
     fetchList,
     fetchCategories,
     remove,
-    resetFilters,
   }
 })

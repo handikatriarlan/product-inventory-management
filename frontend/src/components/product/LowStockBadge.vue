@@ -13,9 +13,10 @@ const visible = computed(() => props.stock <= LOW_STOCK_THRESHOLD)
 <template>
   <span
     v-if="visible"
-    class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-    :class="isOut ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'"
+    class="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wide"
+    :class="isOut ? 'bg-neutral-900 px-1.5 py-0.5 text-white' : 'text-neutral-700'"
   >
+    <span aria-hidden="true">&#9679;</span>
     {{ isOut ? 'Stok habis' : 'Stok menipis' }}
   </span>
 </template>

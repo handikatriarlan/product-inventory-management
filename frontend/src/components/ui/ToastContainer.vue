@@ -4,28 +4,32 @@ import type { ToastType } from '../../composables/useToast'
 
 const { toasts, remove } = useToast()
 
-const typeClasses: Record<ToastType, string> = {
-  success: 'border-emerald-300 bg-emerald-50 text-emerald-800',
-  error: 'border-red-300 bg-red-50 text-red-800',
-  info: 'border-slate-300 bg-white text-slate-800',
+const labels: Record<ToastType, string> = {
+  success: 'Berhasil',
+  error: 'Gagal',
+  info: 'Info',
 }
 </script>
 
 <template>
   <div
-    class="pointer-events-none fixed top-4 right-4 z-50 flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2"
+    class="pointer-events-none fixed top-4 right-4 z-[60] flex w-80 max-w-[calc(100vw-2rem)] flex-col gap-2"
     aria-live="polite"
   >
     <div
       v-for="toast in toasts"
       :key="toast.id"
-      class="pointer-events-auto flex items-start justify-between gap-3 rounded-lg border px-4 py-3 text-sm shadow-sm"
-      :class="typeClasses[toast.type]"
+      class="pointer-events-auto flex items-start justify-between gap-3 border border-neutral-200 border-l-4 border-l-neutral-900 bg-white px-4 py-3 text-sm shadow-sm"
     >
-      <span>{{ toast.message }}</span>
+      <div>
+        <p class="text-[10px] font-semibold uppercase tracking-widest text-neutral-500">
+          {{ labels[toast.type] }}
+        </p>
+        <p class="mt-0.5 text-neutral-900">{{ toast.message }}</p>
+      </div>
       <button
         type="button"
-        class="shrink-0 text-lg leading-none opacity-60 transition-opacity hover:opacity-100"
+        class="-mt-1 shrink-0 text-lg leading-none text-neutral-400 hover:text-neutral-900"
         aria-label="Tutup"
         @click="remove(toast.id)"
       >
