@@ -78,21 +78,15 @@ function validate(): boolean {
 }
 
 function buildPayload(): ProductPayload {
-  const payload: ProductPayload = {
+  return {
     sku: form.sku.trim(),
     name: form.name.trim(),
+    description: form.description.trim() || null,
     price: Number(form.price),
     stock: Number(form.stock),
+    category: form.category.trim() || null,
     status: form.status,
   }
-
-  const description = form.description.trim()
-  if (description) payload.description = description
-
-  const category = form.category.trim()
-  if (category) payload.category = category
-
-  return payload
 }
 
 function revokePreview() {
