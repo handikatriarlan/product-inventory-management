@@ -37,3 +37,13 @@ export interface ProductQuery {
   sortBy?: ProductSortField
   order?: 'asc' | 'desc'
 }
+
+export interface ProductPayload {
+  sku: string
+  name: string
+  description?: string
+  price: number
+  stock: number
+  category?: string
+  status: ProductStatus
+}
