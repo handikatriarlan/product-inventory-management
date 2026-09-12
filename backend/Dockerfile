@@ -14,6 +14,9 @@ ENV DATABASE_URL=postgresql://placeholder:placeholder@localhost:5432/placeholder
 
 RUN bunx prisma generate
 
+RUN chown -R bun:bun /app
+USER bun
+
 EXPOSE 3000
 
 CMD ["sh", "-c", "bunx prisma migrate deploy && bun src/server.ts"]
