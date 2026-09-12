@@ -28,16 +28,6 @@ export interface ProductListResponse {
 
 export type ProductSortField = 'name' | 'price' | 'stock' | 'createdAt' | 'updatedAt'
 
-export interface ProductQuery {
-  page?: number
-  limit?: number
-  search?: string
-  category?: string
-  status?: ProductStatus
-  sortBy?: ProductSortField
-  order?: 'asc' | 'desc'
-}
-
 export interface ProductPayload {
   sku: string
   name: string

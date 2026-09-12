@@ -21,6 +21,11 @@ const emit = defineEmits<{
 function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order: 'asc' | 'desc') {
   return sortBy === field ? (order === 'asc' ? '↑' : '↓') : ''
 }
+
+function ariaSort(field: ProductSortField, sortBy: ProductSortField, order: 'asc' | 'desc') {
+  if (sortBy !== field) return 'none'
+  return order === 'asc' ? 'ascending' : 'descending'
+}
 </script>
 
 <template>
@@ -31,8 +36,8 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
           class="border-b border-neutral-200 bg-neutral-50 text-[11px] uppercase tracking-widest text-neutral-500"
         >
           <tr>
-            <th class="px-4 py-3 font-medium">Produk</th>
-            <th class="px-4 py-3 font-medium">
+            <th scope="col" class="px-4 py-3 font-medium">Produk</th>
+            <th scope="col" class="px-4 py-3 font-medium" :aria-sort="ariaSort('name', sortBy, order)">
               <button
                 type="button"
                 class="inline-flex items-center gap-1 uppercase tracking-widest hover:text-neutral-900"
@@ -41,7 +46,11 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
                 Nama <span aria-hidden="true">{{ sortIndicator('name', sortBy, order) }}</span>
               </button>
             </th>
-            <th class="px-4 py-3 text-right font-medium">
+            <th
+              scope="col"
+              class="px-4 py-3 text-right font-medium"
+              :aria-sort="ariaSort('price', sortBy, order)"
+            >
               <button
                 type="button"
                 class="inline-flex items-center gap-1 uppercase tracking-widest hover:text-neutral-900"
@@ -50,7 +59,11 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
                 Harga <span aria-hidden="true">{{ sortIndicator('price', sortBy, order) }}</span>
               </button>
             </th>
-            <th class="px-4 py-3 text-right font-medium">
+            <th
+              scope="col"
+              class="px-4 py-3 text-right font-medium"
+              :aria-sort="ariaSort('stock', sortBy, order)"
+            >
               <button
                 type="button"
                 class="inline-flex items-center gap-1 uppercase tracking-widest hover:text-neutral-900"
@@ -59,9 +72,17 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
                 Stok <span aria-hidden="true">{{ sortIndicator('stock', sortBy, order) }}</span>
               </button>
             </th>
-            <th class="px-4 py-3 font-medium">Status</th>
-            <th class="px-4 py-3 font-medium">Dibuat</th>
-            <th class="px-4 py-3 text-right font-medium">Aksi</th>
+            <th scope="col" class="px-4 py-3 font-medium">Status</th>
+            <th scope="col" class="px-4 py-3 font-medium" :aria-sort="ariaSort('createdAt', sortBy, order)">
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 uppercase tracking-widest hover:text-neutral-900"
+                @click="emit('sort', 'createdAt')"
+              >
+                Dibuat <span aria-hidden="true">{{ sortIndicator('createdAt', sortBy, order) }}</span>
+              </button>
+            </th>
+            <th scope="col" class="px-4 py-3 text-right font-medium">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-neutral-100">
@@ -73,7 +94,7 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
               </div>
             </td>
             <td class="px-4 py-3">
-              <p class="font-medium text-neutral-900">{{ product.name }}</p>
+              <p class="break-words font-medium text-neutral-900">{{ product.name }}</p>
               <p v-if="product.category" class="text-xs text-neutral-500">{{ product.category }}</p>
             </td>
             <td class="px-4 py-3 text-right tabular-nums text-neutral-700">
@@ -118,54 +139,5 @@ function sortIndicator(field: ProductSortField, sortBy: ProductSortField, order:
         </tbody>
       </table>
     </div>
-
-    <ul class="space-y-3 md:hidden">
-      <li
-        v-for="product in items"
-        :key="product.id"
-        class="border border-neutral-200 bg-white"
-      >
-        <button
-          type="button"
-          class="flex w-full items-start gap-3 p-4 text-left hover:bg-neutral-50"
-          @click="emit('detail', product)"
-        >
-          <ProductImage :src="product.imageUrl" :alt="product.name" />
-          <span class="min-w-0 flex-1">
-            <span class="block font-medium text-neutral-900">{{ product.name }}</span>
-            <span class="block font-mono text-xs text-neutral-500">{{ product.sku }}</span>
-            <span v-if="product.category" class="block text-xs text-neutral-500">
-              {{ product.category }}
-            </span>
-            <span class="mt-1 block text-sm tabular-nums text-neutral-700">
-              {{ formatCurrency(product.price) }}
-            </span>
-            <span class="mt-1 flex items-center gap-2 text-xs">
-              <span class="tabular-nums text-neutral-700">{{ product.stock }}</span>
-              <LowStockBadge :stock="product.stock" />
-            </span>
-          </span>
-          <StatusBadge :status="product.status" />
-        </button>
-        <div
-          class="flex gap-4 border-t border-neutral-100 px-4 py-2 text-xs font-medium uppercase tracking-wide"
-        >
-          <button
-            type="button"
-            class="text-neutral-500 hover:text-neutral-900"
-            @click="emit('edit', product)"
-          >
-            Edit
-          </button>
-          <button
-            type="button"
-            class="text-neutral-900 hover:underline"
-            @click="emit('delete', product)"
-          >
-            Hapus
-          </button>
-        </div>
-      </li>
-    </ul>
   </div>
 </template>

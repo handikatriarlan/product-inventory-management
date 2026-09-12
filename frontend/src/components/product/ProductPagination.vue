@@ -33,7 +33,7 @@ const rangeStart = computed(() =>
 const rangeEnd = computed(() => Math.min(props.meta.page * props.meta.limit, props.meta.total))
 
 const stepClass =
-  'border border-neutral-300 px-3 py-1 text-xs font-medium uppercase tracking-wide text-neutral-700 hover:border-neutral-900 disabled:pointer-events-none disabled:opacity-40'
+  'border border-neutral-300 px-2.5 py-1 text-[11px] font-medium uppercase tracking-wide text-neutral-700 hover:border-neutral-900 disabled:pointer-events-none disabled:opacity-40 sm:px-3 sm:text-xs'
 </script>
 
 <template>
@@ -41,7 +41,7 @@ const stepClass =
     v-if="meta.total > 0"
     class="flex flex-col items-center justify-between gap-3 pt-1 sm:flex-row"
   >
-    <p class="text-xs uppercase tracking-wide text-neutral-500">
+    <p class="text-[11px] uppercase tracking-wide text-neutral-500 sm:text-xs">
       Menampilkan {{ rangeStart }}–{{ rangeEnd }} dari {{ meta.total }} produk
     </p>
 
@@ -55,23 +55,25 @@ const stepClass =
         Sebelumnya
       </button>
 
-      <template v-for="(page, index) in pages" :key="`${page}-${index}`">
-        <span v-if="page === 'ellipsis'" class="px-2 text-sm text-neutral-400">…</span>
-        <button
-          v-else
-          type="button"
-          class="min-w-9 border px-3 py-1 text-xs font-medium tabular-nums"
-          :class="
-            page === meta.page
-              ? 'border-neutral-900 bg-neutral-900 text-white'
-              : 'border-neutral-300 text-neutral-700 hover:border-neutral-900'
-          "
-          :aria-current="page === meta.page ? 'page' : undefined"
-          @click="emit('change', page)"
-        >
-          {{ page }}
-        </button>
-      </template>
+      <span class="hidden items-center gap-1 sm:flex">
+        <template v-for="(page, index) in pages" :key="`${page}-${index}`">
+          <span v-if="page === 'ellipsis'" class="px-2 text-xs text-neutral-500 sm:text-sm">…</span>
+          <button
+            v-else
+            type="button"
+            class="min-w-8 border px-2.5 py-1 text-[11px] font-medium tabular-nums sm:min-w-9 sm:px-3 sm:text-xs"
+            :class="
+              page === meta.page
+                ? 'border-neutral-900 bg-neutral-900 text-white'
+                : 'border-neutral-300 text-neutral-700 hover:border-neutral-900'
+            "
+            :aria-current="page === meta.page ? 'page' : undefined"
+            @click="emit('change', page)"
+          >
+            {{ page }}
+          </button>
+        </template>
+      </span>
 
       <button
         type="button"

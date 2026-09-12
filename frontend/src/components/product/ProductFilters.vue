@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const labelClass = 'block text-[11px] font-medium uppercase tracking-widest text-neutral-500'
 const controlClass =
-  'mt-1 w-full border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 focus:border-neutral-900 focus:outline-none'
+  'mt-1 w-full border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 focus:border-neutral-900 focus:outline-none sm:px-3 sm:py-2'
 
 const searchInput = ref(props.search)
 let debounce: ReturnType<typeof setTimeout> | undefined
@@ -50,7 +50,7 @@ onBeforeUnmount(() => clearTimeout(debounce))
           v-model="searchInput"
           type="search"
           placeholder="Nama atau SKU..."
-          :class="[controlClass, 'placeholder:text-neutral-400']"
+          :class="[controlClass, 'placeholder:text-neutral-500']"
         />
       </label>
 

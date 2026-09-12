@@ -9,6 +9,7 @@ const store = useProductStore()
 
 function onSaved() {
   store.fetchList()
+  store.fetchCategories()
   close()
 }
 

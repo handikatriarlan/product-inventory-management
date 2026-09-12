@@ -16,14 +16,15 @@ const props = defineProps<{
 const emit = defineEmits<{
   submit: [{ payload: ProductPayload; imageFile: File | null }]
   cancel: []
+  clearError: [field: string]
 }>()
 
 const MAX_PRICE = 9_999_999_999.99
 const MAX_STOCK = 2_147_483_647
 
-const labelClass = 'block text-xs font-medium uppercase tracking-wide text-neutral-500'
+const labelClass = 'block text-[11px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs'
 const inputClass =
-  'mt-1 w-full border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-900 focus:outline-none'
+  'mt-1 w-full border border-neutral-300 bg-white px-2.5 py-1.5 text-sm text-neutral-900 placeholder:text-neutral-500 focus:border-neutral-900 focus:outline-none sm:px-3 sm:py-2'
 
 const form = reactive({
   sku: props.initial?.sku ?? '',
@@ -148,36 +149,50 @@ onBeforeUnmount(revokePreview)
 </script>
 
 <template>
-  <form class="space-y-6" novalidate @submit.prevent="handleSubmit">
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+  <form class="space-y-4 sm:space-y-6" novalidate @submit.prevent="handleSubmit">
+    <div class="grid grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2">
       <div>
-        <label for="field-sku" :class="labelClass">SKU</label>
+        <label for="field-sku" :class="labelClass">
+          SKU <span aria-hidden="true">*</span>
+        </label>
         <input
           id="field-sku"
           v-model="form.sku"
           type="text"
           maxlength="50"
+          data-autofocus
+          placeholder="Contoh: SKU-0021"
+          aria-required="true"
           :class="fieldClass('sku')"
           :aria-invalid="Boolean(errorFor('sku'))"
-          :aria-describedby="errorFor('sku') ? 'error-sku' : undefined"
+          :aria-describedby="errorFor('sku') ? 'error-sku' : 'hint-sku'"
+          @input="emit('clearError', 'sku')"
         />
-        <p v-if="errorFor('sku')" id="error-sku" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('sku')" id="error-sku" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('sku') }}
+        </p>
+        <p v-else id="hint-sku" class="mt-1 text-[11px] text-neutral-500 sm:text-xs">
+          Harus unik. Otomatis disimpan dalam huruf besar.
         </p>
       </div>
 
       <div>
-        <label for="field-name" :class="labelClass">Nama</label>
+        <label for="field-name" :class="labelClass">
+          Nama <span aria-hidden="true">*</span>
+        </label>
         <input
           id="field-name"
           v-model="form.name"
           type="text"
           maxlength="200"
+          placeholder="Contoh: Air Fryer"
+          aria-required="true"
           :class="fieldClass('name')"
           :aria-invalid="Boolean(errorFor('name'))"
           :aria-describedby="errorFor('name') ? 'error-name' : undefined"
+          @input="emit('clearError', 'name')"
         />
-        <p v-if="errorFor('name')" id="error-name" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('name')" id="error-name" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('name') }}
         </p>
       </div>
@@ -188,45 +203,59 @@ onBeforeUnmount(revokePreview)
           id="field-description"
           v-model="form.description"
           rows="3"
+          placeholder="Tulis deskripsi singkat produk (opsional)"
           :class="fieldClass('description')"
           :aria-invalid="Boolean(errorFor('description'))"
           :aria-describedby="errorFor('description') ? 'error-description' : undefined"
+          @input="emit('clearError', 'description')"
         ></textarea>
-        <p v-if="errorFor('description')" id="error-description" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('description')" id="error-description" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('description') }}
         </p>
       </div>
 
       <div>
-        <label for="field-price" :class="labelClass">Harga (Rp)</label>
+        <label for="field-price" :class="labelClass">
+          Harga (Rp) <span aria-hidden="true">*</span>
+        </label>
         <input
           id="field-price"
           v-model.number="form.price"
           type="number"
+          inputmode="decimal"
           min="0"
           step="0.01"
+          placeholder="Contoh: 150000"
+          aria-required="true"
           :class="fieldClass('price')"
           :aria-invalid="Boolean(errorFor('price'))"
           :aria-describedby="errorFor('price') ? 'error-price' : undefined"
+          @input="emit('clearError', 'price')"
         />
-        <p v-if="errorFor('price')" id="error-price" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('price')" id="error-price" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('price') }}
         </p>
       </div>
 
       <div>
-        <label for="field-stock" :class="labelClass">Stok</label>
+        <label for="field-stock" :class="labelClass">
+          Stok <span aria-hidden="true">*</span>
+        </label>
         <input
           id="field-stock"
           v-model.number="form.stock"
           type="number"
+          inputmode="numeric"
           min="0"
           step="1"
+          placeholder="Contoh: 10"
+          aria-required="true"
           :class="fieldClass('stock')"
           :aria-invalid="Boolean(errorFor('stock'))"
           :aria-describedby="errorFor('stock') ? 'error-stock' : undefined"
+          @input="emit('clearError', 'stock')"
         />
-        <p v-if="errorFor('stock')" id="error-stock" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('stock')" id="error-stock" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('stock') }}
         </p>
       </div>
@@ -238,11 +267,13 @@ onBeforeUnmount(revokePreview)
           v-model="form.category"
           type="text"
           maxlength="100"
+          placeholder="Contoh: Electronics"
           :class="fieldClass('category')"
           :aria-invalid="Boolean(errorFor('category'))"
           :aria-describedby="errorFor('category') ? 'error-category' : undefined"
+          @input="emit('clearError', 'category')"
         />
-        <p v-if="errorFor('category')" id="error-category" class="mt-1 text-xs font-medium text-neutral-900">
+        <p v-if="errorFor('category')" id="error-category" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">
           {{ errorFor('category') }}
         </p>
       </div>
@@ -256,26 +287,45 @@ onBeforeUnmount(revokePreview)
       </div>
 
       <div class="md:col-span-2">
-        <label for="field-image" :class="labelClass">Gambar</label>
-        <input
-          id="field-image"
-          ref="fileInput"
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          class="mt-1 block w-full text-sm text-neutral-600 file:mr-3 file:border file:border-neutral-900 file:bg-neutral-900 file:px-3 file:py-1.5 file:text-xs file:font-medium file:uppercase file:tracking-wide file:text-white hover:file:bg-neutral-700"
-          @change="handleFileChange"
-        />
-        <p class="mt-1 text-xs text-neutral-500">JPG, PNG, atau WEBP. Maksimal {{ MAX_IMAGE_SIZE_MB }} MB.</p>
-        <p v-if="fileError" class="mt-1 text-xs font-medium text-neutral-900">{{ fileError }}</p>
+        <span :class="labelClass">Gambar</span>
+        <label
+          for="field-image"
+          class="mt-1 flex cursor-pointer flex-col items-center justify-center gap-1 border border-dashed border-neutral-300 bg-neutral-50 px-4 py-5 text-center transition-colors hover:border-neutral-900 focus-within:border-neutral-900"
+        >
+          <svg
+            class="h-6 w-6 text-neutral-400"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="9" cy="9" r="1.5" />
+            <path d="m21 15-5-5L5 21" />
+          </svg>
+          <span class="text-xs font-medium uppercase tracking-wide text-neutral-700">Pilih gambar</span>
+          <span class="text-[11px] text-neutral-500">JPG, PNG, atau WEBP. Maksimal {{ MAX_IMAGE_SIZE_MB }} MB.</span>
+          <input
+            id="field-image"
+            ref="fileInput"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            class="sr-only"
+            @change="handleFileChange"
+          />
+        </label>
+        <p v-if="fileError" class="mt-1 text-[11px] font-medium text-neutral-900 sm:text-xs">{{ fileError }}</p>
 
         <div v-if="previewUrl || existingImageUrl" class="mt-3 flex items-center gap-3">
           <img
             :src="previewUrl ?? existingImageUrl ?? ''"
             alt="Pratinjau gambar produk"
-            class="h-20 w-20 border border-neutral-200 bg-neutral-100 object-cover"
+            class="h-16 w-16 border border-neutral-200 bg-neutral-100 object-cover sm:h-20 sm:w-20"
           />
-          <div class="text-sm text-neutral-600">
-            <p v-if="imageFile">{{ imageFile.name }} &middot; {{ formatFileSize(imageFile.size) }}</p>
+          <div class="min-w-0 text-xs text-neutral-600 sm:text-sm">
+            <p class="break-words" v-if="imageFile">{{ imageFile.name }} &middot; {{ formatFileSize(imageFile.size) }}</p>
             <p v-else>Gambar saat ini</p>
             <AppButton variant="ghost" size="sm" class="mt-1 -ml-2.5" @click="clearImage">Hapus pilihan</AppButton>
           </div>
@@ -291,9 +341,11 @@ onBeforeUnmount(revokePreview)
       <progress class="h-1 w-full accent-neutral-900" :value="uploadProgress" max="100"></progress>
     </div>
 
-    <div class="flex items-center justify-end gap-3">
-      <AppButton variant="outline" :disabled="submitting" @click="emit('cancel')">Batal</AppButton>
-      <AppButton type="submit" :disabled="submitting">
+    <div class="flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
+      <AppButton variant="outline" class="w-full sm:w-auto" :disabled="submitting" @click="emit('cancel')">
+        Batal
+      </AppButton>
+      <AppButton type="submit" class="w-full sm:w-auto" :disabled="submitting">
         {{ submitting ? 'Menyimpan...' : (submitLabel ?? 'Simpan') }}
       </AppButton>
     </div>

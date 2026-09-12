@@ -71,8 +71,20 @@ export function useProductListQuery() {
     { immediate: true },
   )
 
+  watch(
+    () => store.meta.totalPages,
+    (totalPages) => {
+      const lastPage = Math.max(1, totalPages)
+      if (store.query.page > lastPage) {
+        updateQuery({ page: lastPage }, { replace: true })
+      }
+    },
+  )
+
   function updateQuery(patch: Partial<ProductListQuery>, options: { replace?: boolean } = {}) {
-    const next = { ...store.query, ...patch }
+    const current = readQuery(route.query)
+    const next = { ...current, ...patch }
+    if (JSON.stringify(buildQuery(next)) === JSON.stringify(buildQuery(current))) return
     const navigate = options.replace ? router.replace : router.push
     navigate({ name: 'product-list', query: buildQuery(next) })
   }

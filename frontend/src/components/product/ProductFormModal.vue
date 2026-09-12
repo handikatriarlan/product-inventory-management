@@ -51,6 +51,13 @@ function applyValidationErrors(error: unknown) {
   }
 }
 
+function clearServerError(field: string) {
+  if (!serverErrors.value[field]) return
+  const next = { ...serverErrors.value }
+  delete next[field]
+  serverErrors.value = next
+}
+
 async function handleSubmit({ payload, imageFile }: { payload: ProductPayload; imageFile: File | null }) {
   submitting.value = true
   serverErrors.value = {}
@@ -95,6 +102,7 @@ async function handleSubmit({ payload, imageFile }: { payload: ProductPayload; i
       :server-errors="serverErrors"
       :submit-label="mode === 'create' ? 'Tambah Produk' : 'Simpan Perubahan'"
       @submit="handleSubmit"
+      @clear-server-error="clearServerError"
       @cancel="emit('close')"
     />
   </AppModal>
