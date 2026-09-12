@@ -19,9 +19,7 @@
     "@types/express": "^5.0.6",
     "@types/multer": "^2.2.0",
     "@types/node": "^22.20.2",
-    "prisma": "7.10.0"
-  },
-  "peerDependencies": {
+    "prisma": "7.10.0",
     "typescript": "^7.0.2"
   },
   "dependencies": {

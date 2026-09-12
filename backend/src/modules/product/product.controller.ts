@@ -1,3 +1,4 @@
+import { unlink } from 'node:fs/promises'
 import type { Request, Response } from 'express'
 import { AppError } from '../../lib/app-error.ts'
 import { sendData, sendList } from '../../lib/http.ts'
@@ -37,13 +38,18 @@ export async function update(req: Request, res: Response) {
 }
 
 export async function uploadImage(req: Request, res: Response) {
-  const { id } = productIdParamSchema.parse(req.params)
   if (!req.file) {
     throw new AppError(400, 'VALIDATION_ERROR', 'File gambar wajib diunggah')
   }
-  await assertValidImage(req.file)
-  const product = await productService.updateProductImage(id, `/uploads/${req.file.filename}`)
-  sendData(res, product)
+  try {
+    const { id } = productIdParamSchema.parse(req.params)
+    await assertValidImage(req.file)
+    const product = await productService.updateProductImage(id, `/uploads/${req.file.filename}`)
+    sendData(res, product)
+  } catch (error) {
+    await unlink(req.file.path).catch(() => {})
+    throw error
+  }
 }
 
 export async function remove(req: Request, res: Response) {

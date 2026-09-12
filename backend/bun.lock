@@ -22,8 +22,6 @@
         "@types/multer": "^2.2.0",
         "@types/node": "^22.20.2",
         "prisma": "7.10.0",
-      },
-      "peerDependencies": {
         "typescript": "^7.0.2",
       },
     },

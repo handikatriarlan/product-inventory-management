@@ -11,11 +11,13 @@ ensureUploadDir()
 export const app = express()
 
 app.disable('x-powered-by')
-app.set('trust proxy', 1)
-app.use(helmet())
+if (env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1)
+}
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }))
 app.use(cors({ origin: env.CORS_ORIGIN }))
 app.use(express.json({ limit: '1mb' }))
-app.use('/uploads', express.static(uploadDir))
+app.use('/uploads', express.static(uploadDir, { maxAge: '7d', immutable: true }))
 app.use(routes)
 app.use(notFoundHandler)
 app.use(errorHandler)
